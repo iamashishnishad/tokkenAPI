@@ -82,7 +82,7 @@ const authenticateToken = (req, res, next) => {
  * @swagger
  * /register:
  *   post:
- *     description: Register a new user
+ *     description: Register a new user (Public Route)
  *     requestBody:
  *       required: true
  *       content:
@@ -131,7 +131,7 @@ app.post('/register', async (req, res) => {
  * @swagger
  * /login:
  *   post:
- *     description: Login an existing user
+ *     description: Login an existing user (Public Route)
  *     requestBody:
  *       required: true
  *       content:
