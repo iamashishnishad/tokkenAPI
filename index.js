@@ -1,4 +1,3 @@
-// Import required modules
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
@@ -6,17 +5,15 @@ const swaggerJsDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cors = require('cors'); // Added CORS import
+const cors = require('cors'); 
 
-// Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
 
-// Middleware
 app.use(bodyParser.json());
-app.use(cors()); // Enable CORS
+app.use(cors()); 
 
 // MongoDB connection
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
@@ -28,7 +25,6 @@ mongoose
     .then(() => console.log('Connected to MongoDB'))
     .catch((err) => console.error('MongoDB connection error:', err));
 
-// Mongoose schemas and models
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -43,7 +39,6 @@ const productSchema = new mongoose.Schema({
 });
 const Product = mongoose.model('Product', productSchema);
 
-// Swagger configuration
 const swaggerOptions = {
     swaggerDefinition: {
         openapi: '3.0.0',
@@ -83,30 +78,6 @@ const authenticateToken = (req, res, next) => {
     });
 };
 
-/**
- * @swagger
- * /register:
- *   post:
- *     summary: Register a new user
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Bad request
- */
 app.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
@@ -130,30 +101,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /login:
- *   post:
- *     summary: Login and get a token
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Login successful
- *       400:
- *         description: Bad request
- *       401:
- *         description: Invalid email or password
- */
+
 app.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -175,34 +123,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /product:
- *   post:
- *     summary: Add a new product
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               price:
- *                 type: number
- *     responses:
- *       201:
- *         description: Product added successfully
- *       400:
- *         description: Bad request
- *       401:
- *         description: Token required
- *       403:
- *         description: Invalid token
- */
 app.post('/product', authenticateToken, async (req, res) => {
     const { name, price } = req.body;
 
@@ -221,21 +141,7 @@ app.post('/product', authenticateToken, async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /products:
- *   get:
- *     summary: List all products
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of products
- *       401:
- *         description: Token required
- *       403:
- *         description: Invalid token
- */
+
 app.get('/products', authenticateToken, async (req, res) => {
     try {
         const products = await Product.find();
@@ -246,24 +152,10 @@ app.get('/products', authenticateToken, async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * /users:
- *   get:
- *     summary: List all users
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: List of users
- *       401:
- *         description: Token required
- *       403:
- *         description: Invalid token
- */
+
 app.get('/users', authenticateToken, async (req, res) => {
     try {
-        const users = await User.find().select('-password'); // Exclude password
+        const users = await User.find().select('-password'); 
         res.status(200).json(users);
     } catch (err) {
         console.error('Error retrieving users:', err.message);
@@ -271,18 +163,7 @@ app.get('/users', authenticateToken, async (req, res) => {
     }
 });
 
-// Swagger security schema
-/**
- * @swagger
- * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- */
 
-// Start the server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
     console.log(`API documentation available at http://localhost:${PORT}/api-docs`);
